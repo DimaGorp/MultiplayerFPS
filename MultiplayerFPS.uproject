@@ -58,15 +58,11 @@
 			"Enabled": true
 		},
 		{
-			"Name": "EOSShared",
-			"Enabled": true
+    		"Name": "GameLiftPlugin",
+		    "Enabled": true
 		},
 		{
-			"Name": "OnlineServicesEOS",
-			"Enabled": true
-		},
-		{
-			"Name": "OnlineSubsystemEOS",
+			"Name": "WebBrowserWidget",
 			"Enabled": true
 		}
 	]

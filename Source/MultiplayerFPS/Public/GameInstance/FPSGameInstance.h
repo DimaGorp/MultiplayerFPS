@@ -4,7 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
-#include "GameFramework/PlayerController.h"
+#include "Http.h"
+#include "Json.h"
+#include "JsonUtilities.h"
 #include "FPSGameInstance.generated.h"
 /**
  * 
@@ -19,17 +21,33 @@ protected:
 	virtual void Init() override;
 	//Login
 	UFUNCTION(BlueprintCallable)
-	void LogIn();
+	void LogIn(FString usr,FString pass);
 	//LoginDelegate
-	void OnCompleteLogin(int32 LocalUsertNum,bool wasSuccessful,const FUniqueNetId& UserId, const FString& Error);
+	void OnCompleteLogin(FHttpRequestPtr Request,FHttpResponsePtr Responce,bool bWasSuccessful);
+
+	//Sign-in
+	UFUNCTION(BlueprintCallable)
+	void SignUp(FString username,FString email,FString password);
 	//Logout
 	UFUNCTION(BlueprintCallable)
 	void LogOut();
-    void OnCompleteLogout(int32 LocalUserNum, bool bWasSuccessful);
+    void OnCompleteLogout();
 protected:
-	class IOnlineSubsystem * OnlineSubsystem;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly);
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	bool isLogged;
+	UPROPERTY(BlueprintReadWrite)
+	FString username;
+	UPROPERTY(BlueprintReadWrite)
+	FString password;
+	UPROPERTY(BlueprintReadWrite)
+	FString email;
+	UPROPERTY(BlueprintReadWrite)
+	FString code;
+	
+	
+
+private:
+	FHttpModule * Http;
 
 	
 };
