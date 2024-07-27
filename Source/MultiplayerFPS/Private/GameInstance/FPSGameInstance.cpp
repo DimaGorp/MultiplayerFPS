@@ -1,120 +1,55 @@
 #include "GameInstance/FPSGameInstance.h"
-#include "OnlineSubsystem.h"
-#include "OnlineSessionSettings.h"
-#include "Interfaces/OnlineSessionInterface.h"
-#include "Interfaces/OnlineIdentityInterface.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "FPSGameInstance.h"
 
 UFPSGameInstance::UFPSGameInstance()
-    : OnlineSubsystem(nullptr), isLogged(false)
 {
+    Http = &FHttpModule::Get();
 }
 
 void UFPSGameInstance::Init()
 {
     Super::Init();
-    OnlineSubsystem = IOnlineSubsystem::Get();
-    if (!OnlineSubsystem)
-    {
-        UE_LOG(LogTemp, Warning, TEXT("Online Subsystem not available!"));
-    }
+    if(!isLogged)
+        LogIn(username,password);
+    
 }
 
-void UFPSGameInstance::LogIn()
+void UFPSGameInstance::LogIn(FString usr,FString pass)
 {
-    if (OnlineSubsystem)
-    {
-        IOnlineIdentityPtr Identity = OnlineSubsystem->GetIdentityInterface();
-        if (Identity.IsValid())
-        {
-            FOnlineAccountCredentials Credentials;
-            Credentials.Id = FString();  // Add actual user ID if needed
-            Credentials.Token = FString();  // Add actual token if needed
-            Credentials.Type = FString("accountportal");
+    TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
+	JsonObject->SetStringField(TEXT("username"), *FString::Printf(TEXT("%s"), *usr));
+	JsonObject->SetStringField(TEXT("password"), *FString::Printf(TEXT("%s"), *pass));
 
-            Identity->OnLoginCompleteDelegates->AddUObject(this, &UFPSGameInstance::OnCompleteLogin);
-            UE_LOG(LogTemp, Warning, TEXT("Attempting to login..."));
-            Identity->Login(0, Credentials);
-        }
-        else
-        {
-            UE_LOG(LogTemp, Warning, TEXT("Online Identity Interface is not valid!"));
-        }
-    }
-    else
-    {
-        UE_LOG(LogTemp, Warning, TEXT("Online Subsystem is not initialized!"));
-    }
+	FString JsonBody;
+	TSharedRef<TJsonWriter<TCHAR>> JsonWriter = TJsonWriterFactory<>::Create(&JsonBody);
+	FJsonSerializer::Serialize(JsonObject.ToSharedRef(), JsonWriter);
+
+    TSharedRef<IHttpRequest,ESPMode::ThreadSafe> Request = Http->CreateRequest();
+    Request->OnProcessRequestComplete().BindUObject(this,&UFPSGameInstance::OnCompleteLogin);
+    Request->SetURL("https://d6ca4keedb.execute-api.us-east-1.amazonaws.com/test" + FString("/login"));
+    Request->SetVerb("POST");
+    Request->SetHeader("Content-Type", "application/json");
+    Request->ProcessRequest();
 }
 
-void UFPSGameInstance::OnCompleteLogin(int32 LocalUserNum, bool wasSuccessful, const FUniqueNetId& UserId, const FString& Error)
+void UFPSGameInstance::OnCompleteLogin(FHttpRequestPtr Request, FHttpResponsePtr Responce, bool bWasSuccessful)
 {
-    if (wasSuccessful)
-    {
-        isLogged = true;
-        UE_LOG(LogTemp, Warning, TEXT("Login successful!"));
-    }
-    else
-    {
-        isLogged = false;
-        UE_LOG(LogTemp, Error, TEXT("Login failed: %s"), *Error);
-        if (Error.Contains(TEXT("EOS_Canceled")))
-        {
-            UE_LOG(LogTemp, Warning, TEXT("Login process was canceled. Please check your credentials and try again."));
-        }
-    }
-
-    // Clean up the delegate
-    if (OnlineSubsystem)
-    {
-        IOnlineIdentityPtr Identity = OnlineSubsystem->GetIdentityInterface();
-        if (Identity.IsValid())
-        {
-            Identity->ClearOnLoginCompleteDelegates(0, this);
-        }
-    }
+    isLogged = bWasSuccessful;
 }
 
-void UFPSGameInstance::LogOut()
+void UFPSGameInstance::SignUp(FString username, FString email, FString password)
 {
-    if (OnlineSubsystem)
-    {
-        IOnlineIdentityPtr Identity = OnlineSubsystem->GetIdentityInterface();
-        if (Identity.IsValid())
-        {
-            Identity->OnLogoutCompleteDelegates->AddUObject(this, &UFPSGameInstance::OnCompleteLogout);
-            Identity->Logout(0);
-        }
-        else
-        {
-            UE_LOG(LogTemp, Warning, TEXT("Online Identity Interface is not valid!"));
-        }
-    }
-    else
-    {
-        UE_LOG(LogTemp, Warning, TEXT("Online Subsystem is not initialized!"));
-    }
+    
 }
 
-void UFPSGameInstance::OnCompleteLogout(int32 LocalUserNum, bool bWasSuccessful)
+void UFPSGameInstance::LogOut() 
 {
-    if (bWasSuccessful)
-    {
-        isLogged = false;
-        UE_LOG(LogTemp, Warning, TEXT("Logout successful!"));
-    }
-    else
-    {
-        UE_LOG(LogTemp, Error, TEXT("Logout failed!"));
-    }
 
-    // Clean up the delegate
-    if (OnlineSubsystem)
-    {
-        IOnlineIdentityPtr Identity = OnlineSubsystem->GetIdentityInterface();
-        if (Identity.IsValid())
-        {
-            Identity->ClearOnLogoutCompleteDelegates(0, this);
-        }
-    }
+}
+
+
+void UFPSGameInstance::OnCompleteLogout()
+{
+    
 }

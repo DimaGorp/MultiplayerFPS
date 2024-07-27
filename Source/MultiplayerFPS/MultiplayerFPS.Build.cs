@@ -8,7 +8,10 @@ public class MultiplayerFPS : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore","EnhancedInput","OnlineSubsystem", "OnlineSubsystemEOS" });
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore"
+		,"EnhancedInput"
+		,"OnlineSubsystem"
+		, "HTTP","Json","JsonUtilities" });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 		// Uncomment if you are using Slate UI
