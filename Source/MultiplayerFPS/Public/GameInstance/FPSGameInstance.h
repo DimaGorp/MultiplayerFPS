@@ -27,7 +27,7 @@ protected:
 
 	//Sign-in
 	UFUNCTION(BlueprintCallable)
-	void SignUp(FString username,FString email,FString password);
+	void SignUp(FString usr, FString mail, FString pas);
 	//Logout
 	UFUNCTION(BlueprintCallable)
 	void LogOut();
