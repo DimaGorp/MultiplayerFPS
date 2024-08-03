@@ -10,6 +10,7 @@
 #include "FPSGameInstance.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnRequestComplete);
+
 /**
  * 
  */
@@ -58,6 +59,15 @@ protected:
 	//Delegates
 	UPROPERTY(BlueprintAssignable)
 	FOnRequestComplete UIDelegate;
+	UPROPERTY(BlueprintAssignable)
+	FOnRequestComplete UIValidEmailDelegate;
+
+	//Responce Messages
+
+	FString* LoginMessage;
+	FString* SignUpMessage;
+	FString* ConfirmMessage;
+	FString* PasswordMessage;
 private:
 	FHttpModule * Http;
 	FString API_URL;

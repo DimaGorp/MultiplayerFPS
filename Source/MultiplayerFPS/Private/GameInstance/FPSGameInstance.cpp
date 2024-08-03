@@ -115,14 +115,19 @@ void UFPSGameInstance::OnCompleteSignUp(FHttpRequestPtr Request, FHttpResponsePt
         if (Status == 200)
         {
             
-            UE_LOG(LogTemp, Log, TEXT("Login successful"));
+            UE_LOG(LogTemp, Log, TEXT("Sign-Up successful"));
             UIDelegate.Broadcast();
         }
+        else if (Status == 400)
+        {
+            
+        }
+        
         else
         {
             username = "";
             FString Message = JsonObject->GetStringField("body");
-            UE_LOG(LogTemp, Error, TEXT("Login failed: %s"), *Message);
+            UE_LOG(LogTemp, Error, TEXT("Sign-up failed: %s"), *Message);
         }
     }
     else
@@ -201,7 +206,6 @@ void UFPSGameInstance::OnCompleteSignUpConfirmed(FHttpRequestPtr Request, FHttpR
         UE_LOG(LogTemp, Error, TEXT("ResponseMetadata field is missing from JSON"));
     }
 }
-
 void UFPSGameInstance::LogOut() 
 {
 
