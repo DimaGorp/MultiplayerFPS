@@ -2,6 +2,8 @@ Binaries
 DerivedDataCache
 Intermediate
 Saved
+Plugins/*
+Plugins/GameLiftPlugin/*
 Content/StarterContent/*
 MultiplayerFPS.code-workspace
 .vscode
@@ -14,3 +16,5 @@ MultiplayerFPS.code-workspace
 *.suo
 *.xcodeproj
 *.xcworkspace
+*.dll
+*.lib

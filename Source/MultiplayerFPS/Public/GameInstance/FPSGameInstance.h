@@ -8,6 +8,9 @@
 #include "Json.h"
 #include "JsonUtilities.h"
 #include "FPSGameInstance.generated.h"
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnRequestComplete);
+
 /**
  * 
  */
@@ -25,9 +28,16 @@ protected:
 	//LoginDelegate
 	void OnCompleteLogin(FHttpRequestPtr Request,FHttpResponsePtr Responce,bool bWasSuccessful);
 
-	//Sign-in
+	//Sign-un
 	UFUNCTION(BlueprintCallable)
-	void SignUp(FString username,FString email,FString password);
+	void SignUp(FString usr, FString mail, FString pas);
+	//SignUp Delegate
+	void OnCompleteSignUp(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
+	//Sign-un-confirmed
+	UFUNCTION(BlueprintCallable)
+	void SignUpConfirmed(FString cod);
+	//SignUp Delegate
+	void OnCompleteSignUpConfirmed(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 	//Logout
 	UFUNCTION(BlueprintCallable)
 	void LogOut();
@@ -43,11 +53,24 @@ protected:
 	FString email;
 	UPROPERTY(BlueprintReadWrite)
 	FString code;
-	
-	
 
+	
+	
+	//Delegates
+	UPROPERTY(BlueprintAssignable)
+	FOnRequestComplete UIDelegate;
+	UPROPERTY(BlueprintAssignable)
+	FOnRequestComplete UIValidEmailDelegate;
+
+	//Responce Messages
+
+	FString* LoginMessage;
+	FString* SignUpMessage;
+	FString* ConfirmMessage;
+	FString* PasswordMessage;
 private:
 	FHttpModule * Http;
+	FString API_URL;
 
 	
 };
